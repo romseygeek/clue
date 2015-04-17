@@ -2,23 +2,10 @@ package com.senseidb.clue.commands;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
-import org.apache.lucene.index.IndexOptions;
-import org.apache.lucene.index.LeafReader;
-import org.apache.lucene.index.LeafReaderContext;
-import org.apache.lucene.index.FieldInfo;
-import org.apache.lucene.index.FieldInfos;
-import org.apache.lucene.index.Fields;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.Terms;
+import java.util.*;
 
 import com.senseidb.clue.ClueContext;
+import org.apache.lucene.index.*;
 
 public class InfoCommand extends ClueCommand {
 
@@ -44,7 +31,7 @@ public class InfoCommand extends ClueCommand {
     out.println("docval_type:\t" + String.valueOf(finfo.getDocValuesType()));
     out.println("norms:\t\t" + String.valueOf(finfo.hasNorms()));
 
-    IndexOptions indexOptions = finfo.getIndexOptions();
+    FieldInfo.IndexOptions indexOptions = finfo.getIndexOptions();
     if (indexOptions != null) {
       out.println("index_options:\t" + finfo.getIndexOptions().name());
     }

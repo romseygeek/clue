@@ -3,3 +3,5 @@ my-idx
 .settings/
 .project
 .classpath
+.idea
+*.iml

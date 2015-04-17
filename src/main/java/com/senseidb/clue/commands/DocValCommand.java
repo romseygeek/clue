@@ -5,19 +5,9 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.lucene.index.DocValuesType;
-import org.apache.lucene.index.LeafReader;
-import org.apache.lucene.index.LeafReaderContext;
-import org.apache.lucene.index.BinaryDocValues;
-import org.apache.lucene.index.FieldInfo;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.NumericDocValues;
-import org.apache.lucene.index.SortedDocValues;
-import org.apache.lucene.index.SortedNumericDocValues;
-import org.apache.lucene.index.SortedSetDocValues;
-import org.apache.lucene.util.BytesRef;
-
 import com.senseidb.clue.ClueContext;
+import org.apache.lucene.index.*;
+import org.apache.lucene.util.BytesRef;
 
 public class DocValCommand extends ClueCommand {
 
@@ -37,7 +27,7 @@ public class DocValCommand extends ClueCommand {
 
   private void showDocId(int docid, int docBase, 
       Object docVals,
-      DocValuesType docValType,
+      FieldInfo.DocValuesType docValType,
       BytesRef bytesRef,
       PrintStream out, int segmentid) throws Exception {
     int subid = docid - docBase;
@@ -122,21 +112,21 @@ public class DocValCommand extends ClueCommand {
     }
   }
   
-  private Object readDocValues(String field, DocValuesType docValType, LeafReader atomicReader) throws IOException{
+  private Object readDocValues(String field, FieldInfo.DocValuesType docValType, LeafReader atomicReader) throws IOException{
     Object docVals = null;
-    if (docValType == DocValuesType.NUMERIC) {
+    if (docValType == FieldInfo.DocValuesType.NUMERIC) {
       docVals = atomicReader.getNumericDocValues(field);
     }
-    else if (docValType == DocValuesType.BINARY) {
+    else if (docValType == FieldInfo.DocValuesType.BINARY) {
       docVals = atomicReader.getBinaryDocValues(field);
     }
-    else if (docValType == DocValuesType.SORTED) {
+    else if (docValType == FieldInfo.DocValuesType.SORTED) {
       docVals = atomicReader.getSortedDocValues(field);
     }
-    else if (docValType == DocValuesType.SORTED_NUMERIC) {
+    else if (docValType == FieldInfo.DocValuesType.SORTED_NUMERIC) {
       docVals = atomicReader.getSortedNumericDocValues(field);
     }
-    else if (docValType == DocValuesType.SORTED_SET) {
+    else if (docValType == FieldInfo.DocValuesType.SORTED_SET) {
       docVals = atomicReader.getSortedSetDocValues(field);
     }
     return docVals;
@@ -147,13 +137,13 @@ public class DocValCommand extends ClueCommand {
       throws Exception {
     FieldInfo finfo = atomicReader.getFieldInfos().fieldInfo(field);
 
-    if (finfo == null || finfo.getDocValuesType() == DocValuesType.NONE) {
+    if (finfo == null) {
       out.println("docvalue does not exist for field: " + field);
       return;
     }
 
     
-    DocValuesType docValType = finfo.getDocValuesType();
+    FieldInfo.DocValuesType docValType = finfo.getDocValuesType();
     BytesRef bref = new BytesRef();
     
     showDocId(docid, docBase, readDocValues(field, docValType, atomicReader), docValType, bref, out, segmentid);
@@ -202,12 +192,12 @@ public class DocValCommand extends ClueCommand {
         LeafReader atomicReader = ctx.reader();
         FieldInfo finfo = atomicReader.getFieldInfos().fieldInfo(field);
 
-        if (finfo == null || finfo.getDocValuesType() == DocValuesType.NONE) {
+        if (finfo == null) {
           out.println("docvalue does not exist for field: " + field);
           break;
         }
         
-        DocValuesType docValType = finfo.getDocValuesType();
+        FieldInfo.DocValuesType docValType = finfo.getDocValuesType();
         BytesRef bref = new BytesRef();
 
         int maxDoc = atomicReader.maxDoc();
